@@ -8,20 +8,33 @@ import Navbar from "../components/Navbar";
 const InterviewPrep = () => {
   const { id } = useParams();
   const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchQuestions = async () => {
-    const res = await axios.get(`${API_PATHS.SESSION.GET_ALL}/${id}`);
-    setQuestions(res.data.questions || []);
+    const res = await axios.get(`${API_PATHS.SESSION.GET_ONE}/${id}`);
+    setQuestions(res.data.session?.questions || []);
   };
 
-  const generateQuestions = async () => {
-    await axios.post(API_PATHS.AI.GENERATE, { sessionId: id });
-    fetchQuestions();
-  };
+ const generateQuestions = async () => {
+  try {
+    setLoading(true);
+
+    const res = await axios.post(API_PATHS.AI.GENERATE_QUESTIONS, {
+      sessionId: id,
+    });
+
+    setQuestions(res.data.questions);
+
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchQuestions();
-  }, []);
+  }, [id]);
 
   return (
     <div>
@@ -32,9 +45,10 @@ const InterviewPrep = () => {
 
           <button
             onClick={generateQuestions}
+              disabled={loading}
             className="bg-blue-500 text-white px-4 py-2 rounded"
           >
-            Generate
+            {loading ? "Generating..." : "Generate Questions"}
           </button>
         </div>
 

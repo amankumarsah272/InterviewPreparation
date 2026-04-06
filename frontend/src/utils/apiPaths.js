@@ -1,5 +1,6 @@
-const BASE_URL =
-  `${import.meta.env.VITE_API_BASE_URL}/api` || "http://localhost:9000/api";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:9000";
+
+const BASE_URL = `${API_BASE}/api`;
 
 export const API_PATHS = {
   AUTH: {

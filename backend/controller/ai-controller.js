@@ -4,18 +4,13 @@ dotenv.config();
 import { GoogleGenAI } from "@google/genai";
 import Question from "../models/question-model.js";
 import Session from "../models/session-model.js";
-import {
-  conceptExplainPrompt,
-  questionAnswerPrompt,
-} from "../utils/prompts-util.js";
+import { conceptExplainPrompt, questionAnswerPrompt } from "../utils/prompts-util.js";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-// @desc    Generate + SAVE interview questions for a session
-// @route   POST /api/ai/generate-questions
-// @access  Private
+
 export const generateInterviewQuestions = async (req, res) => {
-  console.log("hi");
+  //console.log("hi");
   try {
     const { sessionId } = req.body; //! read sessionId, not role/experience
 
@@ -40,7 +35,7 @@ export const generateInterviewQuestions = async (req, res) => {
     }
 
     const { role, experience, topicsToFocus } = session;
-    console.log("session: ", session);
+    //console.log("session: ", session);
 
     //? 2. generate via Gemini
     const prompt = questionAnswerPrompt(role, experience, topicsToFocus, 10);
@@ -48,7 +43,7 @@ export const generateInterviewQuestions = async (req, res) => {
       model: "gemini-2.5-flash",
       contents: prompt,
     });
-    console.log("response: ", response);
+    //console.log("response: ", response);
 
     const parts = response.candidates?.[0]?.content?.parts ?? [];
     const rawText = parts
@@ -88,8 +83,11 @@ export const generateInterviewQuestions = async (req, res) => {
     //! 5. attach IDs to session
     session.questions.push(...saved.map((q) => q._id));
     await session.save();
+    res.status(201).json({ 
+      success: true, 
+      questions: saved 
+    });
 
-    res.status(201).json({ success: true, data: saved });
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -100,9 +98,7 @@ export const generateInterviewQuestions = async (req, res) => {
   }
 };
 
-// @desc    Generate explanation for an interview question
-// @route   POST /api/ai/generate-explanation
-// @access  Private
+
 export const generateConceptExplanation = async (req, res) => {
   try {
     const { question } = req.body;
@@ -165,6 +161,7 @@ export const generateConceptExplanation = async (req, res) => {
     });
   }
 };
+
 
 export const getSessionById = async (req, res) => {
   try {

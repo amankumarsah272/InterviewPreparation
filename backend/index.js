@@ -1,66 +1,31 @@
-import dotenv from "dotenv";
-dotenv.config({ quiet: true });
-
-import path from "node:path";
-
-import cors from "cors";
 import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 import { connectDB } from "./config/database-config.js";
-
-import {
-  generateConceptExplanation,
-  generateInterviewQuestions,
-} from "./controller/ai-controller.js";
-import { protect } from "./middlewares/auth-middleware.js";
 import authRoutes from "./routes/auth-route.js";
-import authQuestions from "./routes/question-route.js";
-import authSessions from "./routes/session-route.js";
+import sessionRoutes from "./routes/session-route.js";
+import aiRoutes from "./routes/ai-route.js";
 
-connectDB();
+dotenv.config();
 
 const app = express();
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://ai-interview-prep-kwfpbg3d0-sarveshs-projects-eba40f12.vercel.app",
-  "https://ai-interview-prep-app-git-main-sarveshs-projects-eba40f12.vercel.app",
-];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "Access-Control-Allow-Origin",
-    ],
-  }),
-);
-
+// Middleware
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+// Connect to MongoDB
+connectDB();
+
+// Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/sessions", authSessions);
-app.use("/api/questions", authQuestions);
+app.use("/api/sessions", sessionRoutes);
+app.use("/api/ai", aiRoutes);
 
-app.use("/api/ai/generate-questions", protect, generateInterviewQuestions);
-app.use("/api/ai/generate-explanation", protect, generateConceptExplanation);
 
-app.use(
-  "/uploads",
-  express.static(path.join(import.meta.dirname, "uploads"), {}),
-);
-app.listen(process.env.PORT, (err) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  console.log("server running at port, ", process.env.PORT);
+
+const PORT = process.env.PORT || 9001;
+app.listen(process.env.PORT, () => {
+  console.log(`Server running on port ${process.env.PORT}`);
 });

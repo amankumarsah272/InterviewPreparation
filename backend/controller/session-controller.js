@@ -1,9 +1,8 @@
 import Question from "../models/question-model.js";
 import Session from "../models/session-model.js";
 
-// @desc    Create a new session and linked questions
-// @route   POST /api/sessions/create
-// @access  Private
+
+
 export const createSession = async (req, res) => {
   try {
     console.log(1);
@@ -61,9 +60,8 @@ export const createSession = async (req, res) => {
   }
 };
 
-// @desc    Get all sessions for the logged-in user
-// @route   GET /api/sessions/my-sessions
-// @access  Private
+
+
 export const getMySessions = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -83,9 +81,7 @@ export const getMySessions = async (req, res) => {
   }
 };
 
-// @desc    Get a session by ID with populated questions
-// @route   GET /api/sessions/:id
-// @access  Private
+
 export const getSessionById = async (req, res) => {
   try {
     const session = await Session.findById(req.params.id)

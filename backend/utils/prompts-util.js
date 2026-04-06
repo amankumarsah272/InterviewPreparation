@@ -12,20 +12,23 @@ Generate exactly ${numberOfQuestions} interview questions for the following prof
 - Topics to focus on: ${topicsToFocus || "general topics for this role"}
 
 Rules for each question:
-1. The "answer" field must be well-structured using markdown:
-   - Use **bold** for key terms
-   - Use bullet points or numbered lists where appropriate
-   - Add a short \`\`\`js ... \`\`\` code block when relevant (keep it under 10 lines)
-   - Break the answer into short paragraphs — never one wall of text
-2. Answers should be beginner-friendly but technically accurate.
-3. Difficulty should match ${experience} years of experience.
+1. The "answer" must be formatted as a string using \\n for line breaks.
+2. Use **bold** text and bullet points (-) where needed.
+3. If code is needed, include it as plain text (DO NOT use triple backticks).
+4. Keep answers structured and readable.
+5. Difficulty should match ${experience} years of experience.
 
-Return ONLY a valid JSON array. No extra text, no markdown wrapper around the JSON.
+STRICT RULES:
+- Return ONLY valid JSON
+- Do NOT use backticks (\`\`\`)
+- Do NOT add extra text
+- Ensure proper commas and quotes
 
+Example:
 [
   {
-    "question": "...",
-    "answer": "**Definition:** ...\\n\\n**Key points:**\\n- Point 1\\n- Point 2\\n\\n\`\`\`js\\n// example\\n\`\`\`"
+    "question": "What is React?",
+    "answer": "**Definition:** React is a library.\\n\\n**Key Points:**\\n- Component-based\\n- Virtual DOM\\n\\nCode Example:\\nconst App = () => <div>Hello</div>;"
   }
 ]`;
 };
