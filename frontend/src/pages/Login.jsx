@@ -1,28 +1,24 @@
-import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import axios from "../utils/axiosInstance";
 import { API_PATHS } from "../utils/apiPaths";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
-
-  const handleForm = (e) => {
-    let { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-  };
 
   const handleLogin = async () => {
     try {
       const res = await axios.post(API_PATHS.AUTH.LOGIN, form);
       localStorage.setItem("token", res.data.token);
       navigate("/dashboard");
-    } catch (error) {
-      alert("Invalid email and password");
+    } catch (err) {
+      alert("Invalid email or password");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-100 via-white to-yellow-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-yellow-100 via-white to-yellow-50 px-4">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
         {/* Heading */}
         <h2 className="text-2xl font-bold text-center mb-2">Welcome Back 👋</h2>
@@ -35,7 +31,7 @@ const Login = () => {
           type="email"
           placeholder="Enter your email"
           className="w-full border border-gray-300 rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-orange-400"
-          onChange={handleForm}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
         {/* Password */}
@@ -43,7 +39,7 @@ const Login = () => {
           type="password"
           placeholder="Enter your password"
           className="w-full border border-gray-300 rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-orange-400"
-          onChange={handleForm}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
 
         {/* Button */}

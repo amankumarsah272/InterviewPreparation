@@ -22,7 +22,8 @@ const SignUp = () => {
     }
   };
 
-  return   <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-100 via-white to-yellow-50 px-4">
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-100 via-white to-yellow-50 px-4">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
         {/* Heading */}
         <h2 className="text-2xl font-bold text-center mb-2">
@@ -82,7 +83,8 @@ const SignUp = () => {
           </Link>
         </p>
       </div>
-    </div>;
+    </div>
+  );
 };
 
 export default SignUp;

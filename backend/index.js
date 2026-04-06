@@ -1,36 +1,66 @@
-//! create an express server and check if it's working
+import dotenv from "dotenv";
+dotenv.config({ quiet: true });
 
+import path from "node:path";
+
+import cors from "cors";
 import express from "express";
-import cors from "cors"; // cross origin resource sharing (browser blocks the request which comes from anywhere but localhost:8000)
-// 1) we are importing express module which we installed using npm i
+import { connectDB } from "./config/database-config.js";
 
-import userRoutes from "./routes/auth-route.js";
+import {
+  generateConceptExplanation,
+  generateInterviewQuestions,
+} from "./controller/ai-controller.js";
+import { protect } from "./middlewares/auth-middleware.js";
+import authRoutes from "./routes/auth-route.js";
+import authQuestions from "./routes/question-route.js";
+import authSessions from "./routes/session-route.js";
 
-// 2) call/invoke the function
-let app = express(); // object = {listen}
+connectDB();
+
+const app = express();
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://ai-interview-prep-kwfpbg3d0-sarveshs-projects-eba40f12.vercel.app",
+  "https://ai-interview-prep-app-git-main-sarveshs-projects-eba40f12.vercel.app",
+];
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Access-Control-Allow-Origin",
+    ],
   }),
 );
 
-app.use(express.urlencoded({ extended: true }));// this 
 app.use(express.json());
 
-app.use("/api/auth", userRoutes); // http://localhost:9001/api/auth/signup
+app.use("/api/auth", authRoutes);
+app.use("/api/sessions", authSessions);
+app.use("/api/questions", authQuestions);
 
-// 3) assign a port number to our server
-app.listen(9001, () => {
-  console.log("Server Started.....");
+app.use("/api/ai/generate-questions", protect, generateInterviewQuestions);
+app.use("/api/ai/generate-explanation", protect, generateConceptExplanation);
+
+app.use(
+  "/uploads",
+  express.static(path.join(import.meta.dirname, "uploads"), {}),
+);
+app.listen(process.env.PORT, (err) => {
+  if (err) {
+    console.log(err);
+    return;
+  }
+  console.log("server running at port, ", process.env.PORT);
 });
-// app.listen(PORT_NUMBER, callback)
-
-//! to check if the server is running, in cmd(git bash), goto backend folder and type "npx nodemon index.js"
-// open browser -> localhost:PORT_NUMBER and press enter
-
-// https://nodejs.org/en/ (/) =>  this is base url
-// https://nodejs.org/en/blog => /blog is one endpoint
-// https://nodejs.org/en/download
-
-// https://github.com/Sarvesh-1999/NIGHT-CODING-MARATHON
