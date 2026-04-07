@@ -17,7 +17,7 @@ const LandingPage = () => {
 
       <button
         onClick={() => navigate("/login")}
-        className="bg-black text-white px-6 py-3 rounded-lg hover:scale-105 transition"
+        className="bg-black text-white px-6 py-3 rounded-lg hover:scale-105 transition cursor-pointer"
       >
         Get Started
       </button>

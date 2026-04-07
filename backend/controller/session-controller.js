@@ -82,6 +82,7 @@ export const getMySessions = async (req, res) => {
 };
 
 
+
 export const getSessionById = async (req, res) => {
   try {
     const session = await Session.findById(req.params.id)
@@ -111,3 +112,46 @@ export const getSessionById = async (req, res) => {
   }
 };
 
+
+
+
+export const deleteSession = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const session = await Session.findById(id);
+
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        message: "Session not found",
+      });
+    }
+
+    //check if session belongs to user
+    if (session.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    // DELETE RELATED QUESTIONS
+    await Question.deleteMany({
+      _id: { $in: session.questions },
+    });
+
+    await session.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: "Session & Questions deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { API_PATHS } from "../utils/apiPaths";
 import axios from "../utils/axiosInstance";
+import { toast } from "react-toastify";
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -15,10 +16,16 @@ const SignUp = () => {
   const handleSignup = async () => {
     try {
       await axios.post(API_PATHS.AUTH.SIGNUP, form);
+
+      toast.success("Signup successful 🎉");
+
       navigate("/login");
     } catch (error) {
       console.log(error.response);
-      alert("Signup failed");
+
+      toast.error(
+        error.response?.data?.message || "Signup failed ❌"
+      );
     }
   };
 
@@ -60,7 +67,7 @@ const SignUp = () => {
         {/* Button */}
         <button
           onClick={handleSignup}
-          className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition duration-200"
+          className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition duration-200 cursor-pointer"
         >
           Sign Up
         </button>

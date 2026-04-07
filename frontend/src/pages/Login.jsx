@@ -2,26 +2,47 @@ import { useState } from "react";
 import axios from "../utils/axiosInstance";
 import { API_PATHS } from "../utils/apiPaths";
 import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+
+    // Validation
+    if (!form.email || !form.password) {
+      return toast.error("Please fill all fields ⚠️");
+    }
+
     try {
+      setLoading(true);
+
       const res = await axios.post(API_PATHS.AUTH.LOGIN, form);
+
+      toast.success("Login successful 🎉");
+
       localStorage.setItem("token", res.data.token);
+
       navigate("/dashboard");
     } catch (err) {
-      alert("Invalid email or password");
+      toast.error(
+        err.response?.data?.message || "Invalid email or password ❌"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-yellow-100 via-white to-yellow-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-100 via-white to-yellow-50 px-4">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
         {/* Heading */}
-        <h2 className="text-2xl font-bold text-center mb-2">Welcome Back 👋</h2>
+        <h2 className="text-2xl font-bold text-center mb-2">
+          Welcome Back 👋
+        </h2>
         <p className="text-gray-500 text-center mb-6 text-sm">
           Login to continue your interview preparation
         </p>
@@ -45,9 +66,9 @@ const Login = () => {
         {/* Button */}
         <button
           onClick={handleLogin}
-          className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition duration-200"
+          className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition duration-200 cursor-pointer"
         >
-          Login
+           Login
         </button>
 
         {/* Divider */}
